@@ -1,47 +1,45 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 
 function App() {
-  const [url, setUrl] = useState('');
-  const [shortUrl, setShortUrl] = useState('');
+  const [url, setUrl] = useState("");
+  const [shortUrl, setShortUrl] = useState("");
 
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    try {
-      const response = await fetch('/api/shorten', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ originalUrl: url }),
-      });
+    const response = await fetch("http://localhost:3000/api/shorten", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ url }),
+    });
 
-      const data = await response.json();
-      setShortUrl(data.shortUrl);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+    const data = await response.json();
 
-  const handleChange = (event) => {
-    setUrl(event.target.value);
+    setShortUrl(data.shortUrl);
+    setUrl("");
   };
 
   return (
-    <div>
-      <h1>Acortador de URLs</h1>
+    <div className="container">
+      <h1>URL Shortener</h1>
       <form onSubmit={handleSubmit}>
-        <label>
-          Introduce la URL que deseas acortar:
-          <input type="text" value={url} onChange={handleChange} />
-        </label>
-        <button type="submit">Acortar URL</button>
+        <input
+          type="text"
+          placeholder="Enter a URL to shorten"
+          value={url}
+          onChange={(event) => setUrl(event.target.value)}
+        />
+        <button type="submit">Shorten</button>
       </form>
       {shortUrl && (
-        <div>
-          <p>La URL acortada es:</p>
-          <a href={shortUrl}>{shortUrl}</a>
-        </div>
+        <p>
+          Shortened URL:{" "}
+          <a href={shortUrl} target="_blank" rel="noopener noreferrer">
+            {shortUrl}
+          </a>
+        </p>
       )}
     </div>
   );
