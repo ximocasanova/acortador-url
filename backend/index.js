@@ -13,13 +13,18 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 app.use(morgan("tiny"));
+console.log(`mongodb://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_HOST}:${process.env.MONGO_PORT}/${process.env.MONGO_DB}?authSource=admin`)
 
-mongoose.connect(process.env.MONGODB_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
-.then(() => console.log('MongoDB connected'))
-.catch((error) => console.error(error));
+mongoose
+  .connect(
+    `mongodb://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_HOST}:${process.env.MONGO_PORT}/${process.env.MONGO_DB}?authSource=admin`,
+    {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    }
+  )
+  .then(() => console.log("MongoDB connected"))
+  .catch((error) => console.error(error));
 
 const urlSchema = new mongoose.Schema({
   id: String,
@@ -40,7 +45,7 @@ app.post("/api/shorten", async (req, res) => {
   }
 
   const id = shortid.generate();
-  const shortUrl = `http://localhost:3000/${id}`;
+  const shortUrl = `http://localhost:4000/${id}`;
 
   const newUrl = new Url({ id, url, shortUrl });
   await newUrl.save();
